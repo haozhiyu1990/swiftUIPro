@@ -70,32 +70,18 @@ struct OneView: View {
 }
 
 struct TwoView: View {
-    @State var username: String = ""
-    @State var password: String = ""
-    @State var push: Bool = false
+    @ObservedObject var viewModel = MovieViewModel()
 
     var body: some View {
-        VStack {
-            TextField("Enter username", text: $username)
-                .padding(EdgeInsets(top: 50, leading: 25, bottom: 30, trailing: 25))
-                .font(.system(size: 18, weight: .bold, design: .default))
-            SecureField("Enter password", text: $password)
-                .padding([.leading, .trailing], 25)
-                .padding([.bottom], 30)
-                .font(.system(size: 18, weight: .bold, design: .default))
-            Button(action: {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                push = true
-            }, label: {
-                Text("Sign In")
-                    .foregroundColor(.white)
-                    .font(.system(size: 18, weight: .bold, design: .default))
-                    .frame(width: 100, height: 100, alignment: .center)
-            })
-            .buttonStyle(MybuttonStyle1())
-            
-            NavigationLink("", destination: DetailView(username: $username, password: $password), isActive: $push)
-            Spacer()
+        List(viewModel.movies) { movie in // 2
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(movie.title) // 3a
+                        .font(.headline)
+                    Text(movie.originalTitle) // 3b
+                        .font(.subheadline)
+                }
+            }
         }
         .background(Color.pink)
     }
@@ -114,13 +100,6 @@ struct MybuttonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(configuration.isPressed ? Color.red : Color.blue)
-    }
-}
-
-struct MybuttonStyle1: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .background(configuration.isPressed ? Color.orange : Color.black)
     }
 }
 
